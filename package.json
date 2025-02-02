@@ -1,0 +1,53 @@
+{
+	"name": "sooplive-public-api",
+	"version": "0.0.1",
+	"description": "Sooplive Public API",
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"test": "vitest",
+		"test:watch": "vitest --watch",
+		"test:coverage": "vitest --coverage",
+		"dev": "ts-node src/index.ts",
+		"build": "rimraf dist && tsup src/index.ts --format cjs,esm --dts --clean",
+		"prepare": "pnpm build",
+		"lint": "eslint src --ext .ts",
+		"format": "prettier --write \"src/**/*.ts\""
+	},
+	"keywords": [
+		"sooplive",
+		"afreecatv",
+		"api",
+		"typescript"
+	],
+	"author": "heart-re-up",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/heart-re-up/sooplive-public-api.git"
+	},
+	"homepage": "https://github.com/heart-re-up/sooplive-public-api#readme",
+	"bugs": {
+		"url": "https://github.com/heart-re-up/sooplive-public-api/issues"
+	},
+	"devDependencies": {
+		"@types/jest": "^29.5.14",
+		"@typescript-eslint/eslint-plugin": "^8.22.0",
+		"@typescript-eslint/parser": "^8.22.0",
+		"@vitest/coverage-v8": "3.0.4",
+		"eslint": "^9.19.0",
+		"fetch-chain": "^0.0.3",
+		"jest": "^29.7.0",
+		"prettier": "^3.4.2",
+		"rimraf": "^6.0.1",
+		"ts-jest": "^29.2.5",
+		"ts-node": "^10.9.2",
+		"tsup": "^8.3.6",
+		"typescript": "^5.7.3",
+		"vitest": "^3.0.4"
+	}
+}
