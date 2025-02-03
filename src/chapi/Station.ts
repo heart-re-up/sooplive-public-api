@@ -1,9 +1,12 @@
-import { ApiOperation } from "../ApiOperation";
+import { ApiOperation } from "../ApiService";
 
 export const StationOperation: ApiOperation<StationRequest, StationResponse> = {
   request: (params: StationRequest) => `/api/${params.user_id}/station`,
   init: (params: StationRequest) => ({
     method: "GET",
+    headers: {
+      Referer: `https://ch.sooplive.com/${params.user_id}`,
+    },
   }),
 };
 
@@ -54,9 +57,9 @@ type Station = {
   /** 디스플레이 설정 */
   display: StationDisplay;
   /** 방송국 그룹 정보 */
-  groups: any[]; // 상세 타입 필요시 추가
+  groups: object[]; // 상세 타입 필요시 추가
   /** 방송국 메뉴 정보 */
-  menus: any[]; // 상세 타입 필요시 추가
+  menus: object[]; // 상세 타입 필요시 추가
   /** 방송 시작 시간 */
   broad_start: string;
   /** 방송국 등급 */
@@ -88,7 +91,7 @@ type StationResponse = {
   /** 방송국 정보 */
   station: Station;
   /** 현재 방송 정보 */
-  broad: CurrentBroadcast;
+  broad?: CurrentBroadcast;
   /** 구독 정보 */
   subscription: Subscription;
 };

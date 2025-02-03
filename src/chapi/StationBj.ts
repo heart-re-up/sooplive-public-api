@@ -1,4 +1,4 @@
-import { ApiOperation } from "../ApiOperation";
+import { ApiOperation } from "../ApiService";
 
 export const StationBjOperation: ApiOperation<
   StationBjRequest,
@@ -7,6 +7,9 @@ export const StationBjOperation: ApiOperation<
   request: (params: StationBjRequest) => `/api/${params.user_id}/station/bj`,
   init: (params: StationBjRequest) => ({
     method: "GET",
+    headers: {
+      Referer: `https://ch.sooplive.com/${params.user_id}`,
+    },
   }),
 };
 

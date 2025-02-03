@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
-import { HttpClient } from "../HttpClient";
-import { ApiService } from "../ApiService";
-import { HomeOperation } from "./Home";
 import { buildClient } from "fetch-chain";
+import { beforeAll, describe, expect, it } from "vitest";
+import { ApiService, SimpleApiService } from "../ApiService";
+import { HttpClient } from "../HttpClient";
+import { HomeOperation } from "./Home";
 
 describe("Home", () => {
   let httpClient: HttpClient;
@@ -10,17 +10,20 @@ describe("Home", () => {
 
   beforeAll(() => {
     httpClient = {
-      fetch: (request: RequestInfo | URL, init?: RequestInit) =>
+      fetch: (
+        request: RequestInfo | URL,
+        init?: RequestInit,
+      ): Promise<Response> =>
         buildClient()
           .baseURL("https://chapi.sooplive.co.kr")
           .build()
           .fetch(request, init),
     };
-    apiService = new ApiService(httpClient);
+    apiService = new SimpleApiService(httpClient);
   });
   describe("Home API 테스트", () => {
     it("실제 홈 데이터를 가져와야 합니다", async () => {
-      const homeOperation = apiService["createOperation"](HomeOperation);
+      const homeOperation = apiService.createOperation(HomeOperation);
       const result = await homeOperation({ user_id: "rud9281" });
 
       // 응답 구조 검증

@@ -1,9 +1,12 @@
-import { ApiOperation } from "../ApiOperation";
+import { ApiOperation } from "../ApiService";
 
 export const HomeOperation: ApiOperation<HomeRequest, HomeResponse> = {
   request: (params: HomeRequest) => `/api/${params.user_id}/home`,
   init: (params: HomeRequest) => ({
     method: "GET",
+    headers: {
+      Referer: `https://ch.sooplive.com/${params.user_id}`,
+    },
   }),
 };
 
@@ -96,13 +99,13 @@ type HomeResponse = {
   /** 유저 게시글 목록 */
   user_boards: BoardItem[];
   /** 캐치스토리 목록 */
-  catchstorys: any[];
+  catchstorys: object[];
   /** 재생목록 */
-  playlists: any[];
+  playlists: object[];
   /** 숩토어 아이템 */
-  sooptore: any[];
+  sooptore: object[];
   /** 배너 목록 */
-  banners: any[];
+  banners: object[];
   /** 광고 허용 여부 */
   is_adsence: boolean;
   /** 애드벌룬 이벤트 정보 */

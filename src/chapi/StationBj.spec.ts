@@ -1,8 +1,9 @@
 import { buildClient } from "fetch-chain";
-import { ApiService } from "../ApiService";
+import { ApiService, SimpleApiService } from "../ApiService";
 import { HttpClient } from "../HttpClient";
 import { StationBjOperation } from "./StationBj";
 import { Chain } from "fetch-chain";
+import { describe, it, expect, beforeAll } from "vitest";
 
 describe("StationBj API", () => {
   let httpClient: HttpClient;
@@ -10,7 +11,10 @@ describe("StationBj API", () => {
 
   beforeAll(() => {
     httpClient = {
-      fetch: (request: RequestInfo | URL, init?: RequestInit) =>
+      fetch: (
+        request: RequestInfo | URL,
+        init?: RequestInit,
+      ): Promise<Response> =>
         buildClient()
           .baseURL("https://chapi.sooplive.co.kr")
           .addInterceptor((chain: Chain) => {
@@ -28,14 +32,12 @@ describe("StationBj API", () => {
           .build()
           .fetch(request, init),
     };
-    apiService = new ApiService(httpClient);
+    apiService = new SimpleApiService(httpClient);
   });
 
   it("BJ 방송국 정보를 정상적으로 가져와야 합니다", async () => {
-    const stationBjOperation =
-      apiService["createOperation"](StationBjOperation);
+    const stationBjOperation = apiService.createOperation(StationBjOperation);
     const result = await stationBjOperation({ user_id: "rud9281" });
-    console.log(result);
     // 기본 응답 구조 검증
     expect(result).toHaveProperty("medals");
     expect(result).toHaveProperty("links");

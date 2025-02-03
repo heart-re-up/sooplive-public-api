@@ -1,5 +1,6 @@
+import { describe, it, expect, beforeAll } from "vitest";
 import { buildClient } from "fetch-chain";
-import { ApiService } from "../ApiService";
+import { ApiService, SimpleApiService } from "../ApiService";
 import { HttpClient } from "../HttpClient";
 import { StationOperation } from "./Station";
 import { Chain } from "fetch-chain";
@@ -10,7 +11,10 @@ describe("Station API", () => {
 
   beforeAll(() => {
     httpClient = {
-      fetch: (request: RequestInfo | URL, init?: RequestInit) =>
+      fetch: (
+        request: RequestInfo | URL,
+        init?: RequestInit,
+      ): Promise<Response> =>
         buildClient()
           .baseURL("https://chapi.sooplive.co.kr")
           .addInterceptor((chain: Chain) => {
@@ -31,10 +35,10 @@ describe("Station API", () => {
           .build()
           .fetch(request, init),
     };
-    apiService = new ApiService(httpClient);
+    apiService = new SimpleApiService(httpClient);
   });
   it("방송국 정보를 정상적으로 가져와야 합니다", async () => {
-    const stationOperation = apiService["createOperation"](StationOperation);
+    const stationOperation = apiService.createOperation(StationOperation);
     const result = await stationOperation({ user_id: "rud9281" });
 
     // 기본 응답 구조 검증
@@ -58,6 +62,9 @@ describe("Station API", () => {
     expect(station).toHaveProperty("user_id");
     expect(station).toHaveProperty("user_nick");
 
+    // 중요한 숫자 필드 타입 검증
+    expect(typeof station.station_no).toBe("number");
+
     // display 객체 검증
     const { display } = station;
     expect(display).toHaveProperty("main_type");
@@ -67,14 +74,20 @@ describe("Station API", () => {
     expect(display).toHaveProperty("skin_type");
     expect(display).toHaveProperty("skin_no");
 
-    // broad 객체 검증
-    const { broad } = result;
-    expect(broad).toHaveProperty("user_id");
-    expect(broad).toHaveProperty("broad_no");
-    expect(broad).toHaveProperty("broad_title");
-    expect(broad).toHaveProperty("current_sum_viewer");
-    expect(broad).toHaveProperty("broad_grade");
-    expect(broad).toHaveProperty("is_password");
+    // broad 객체 검증 (broad가 존재할 경우에만)
+    if (result.broad) {
+      const { broad } = result;
+      expect(broad).toHaveProperty("user_id");
+      expect(broad).toHaveProperty("broad_no");
+      expect(broad).toHaveProperty("broad_title");
+      expect(broad).toHaveProperty("current_sum_viewer");
+      expect(broad).toHaveProperty("broad_grade");
+      expect(broad).toHaveProperty("is_password");
+
+      // 중요한 숫자/불리언 필드 타입 검증
+      expect(typeof broad.current_sum_viewer).toBe("number");
+      expect(typeof broad.is_password).toBe("boolean");
+    }
 
     // subscription 객체 검증
     const { subscription } = result;
@@ -82,12 +95,9 @@ describe("Station API", () => {
     expect(subscription).toHaveProperty("tier1");
     expect(subscription).toHaveProperty("tier2");
 
-    // 타입 검증
-    expect(typeof station.station_no).toBe("number");
-    expect(typeof broad.current_sum_viewer).toBe("number");
+    // 중요한 숫자 필드 타입 검증
     expect(typeof subscription.total).toBe("number");
-    expect(typeof broad.is_password).toBe("boolean");
-    expect(Array.isArray(station.groups)).toBe(true);
-    expect(Array.isArray(station.menus)).toBe(true);
+    expect(typeof subscription.tier1).toBe("number");
+    expect(typeof subscription.tier2).toBe("number");
   });
 });

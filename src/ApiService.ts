@@ -1,16 +1,22 @@
-import { HomeOperation } from "./chapi/Home";
-import { StationOperation } from "./chapi/Station";
-import { StationBjOperation } from "./chapi/StationBj";
 import { HttpClient } from "./HttpClient";
-import { ApiOperation } from "./ApiOperation";
 
-export class ApiService {
+export interface ApiOperation<TParams extends object, TReturn extends object> {
+  request: (params: TParams) => string | URL;
+  init: (params: TParams) => RequestInit | undefined;
+}
+export interface ApiService {
+  createOperation<TParams extends object, TReturn extends object>(
+    operation: ApiOperation<TParams, TReturn>,
+  ): (params: TParams) => Promise<TReturn>;
+}
+
+export class SimpleApiService implements ApiService {
   constructor(private readonly httpClient: HttpClient) {}
 
-  private createOperation<TRequest, TResponse>(
-    operation: ApiOperation<TRequest, TResponse>
+  createOperation<TParams extends object, TReturn extends object>(
+    operation: ApiOperation<TParams, TReturn>,
   ) {
-    return async (params: TRequest): Promise<TResponse> => {
+    return async (params: TParams): Promise<TReturn> => {
       const request = operation.request(params);
       const init = operation.init(params);
       const response = await this.httpClient.fetch(request, init);
